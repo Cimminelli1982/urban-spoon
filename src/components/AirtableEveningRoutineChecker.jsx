@@ -52,7 +52,6 @@ const AirtableEveningRoutineChecker = () => {
 
   const handleSave = async (id, updatedFields) => {
     try {
-      // Explicitly select only the fields we want to update
       const fieldsToUpdate = {
         Day: updatedFields.Day,
         Category: updatedFields.Category,
@@ -63,7 +62,7 @@ const AirtableEveningRoutineChecker = () => {
       
       await base(TABLE_NAME).update(id, fieldsToUpdate);
       setEditingId(null);
-      fetchData(); // Refresh data after update
+      fetchData();
     } catch (err) {
       console.error('Error updating record:', err);
       setError(err.message);
@@ -74,36 +73,47 @@ const AirtableEveningRoutineChecker = () => {
     setEditingId(null);
   };
 
+  const groupByCategory = (items) => {
+    return items.reduce((acc, item) => {
+      (acc[item.Category] = acc[item.Category] || []).push(item);
+      return acc;
+    }, {});
+  };
+
   if (error) return <div className="text-red-500">Error: {error}</div>;
   if (!data) return <div className="text-gray-500">Loading...</div>;
 
+  const groupedData = groupByCategory(data);
+
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Daily Log Items</h1>
-      <div className="grid gap-4">
-        {data.map(item => (
-          <div key={item.id} className="bg-white shadow rounded p-4">
-            {editingId === item.id ? (
-              <EditForm item={item} onSave={handleSave} onCancel={handleCancel} />
-            ) : (
-              <div>
-                <p><strong>ID:</strong> {item.ID}</p>
-                <p><strong>Day:</strong> {item.Day}</p>
-                <p><strong>Category:</strong> {item.Category}</p>
-                <p><strong>Sub Category:</strong> {item['Sub Category']}</p>
-                <p><strong>Details:</strong> {item.Details}</p>
-                <p><strong>Done:</strong> {item.Done ? 'Yes' : 'No'}</p>
-                <button 
-                  onClick={() => handleEdit(item.id)}
-                  className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                  Edit
-                </button>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+      <h1 className="text-3xl font-bold mb-6">Daily Log</h1>
+      {Object.entries(groupedData).map(([category, items]) => (
+        <div key={category} className="mb-8">
+          <h2 className="text-2xl font-semibold mb-4">{category}</h2>
+          <ul className="space-y-4">
+            {items.map(item => (
+              <li key={item.id} className="bg-white shadow rounded p-4">
+                {editingId === item.id ? (
+                  <EditForm item={item} onSave={handleSave} onCancel={handleCancel} />
+                ) : (
+                  <div>
+                    <p className="text-lg font-medium">
+                      {item['Sub Category']}: {item.Details} - <span className={item.Done ? "text-green-600" : "text-red-600"}>{item.Done ? "Yes" : "No"}</span>
+                    </p>
+                    <button 
+                      onClick={() => handleEdit(item.id)}
+                      className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    >
+                      Edit
+                    </button>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </div>
   );
 };
