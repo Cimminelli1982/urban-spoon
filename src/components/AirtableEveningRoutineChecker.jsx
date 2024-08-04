@@ -3,7 +3,7 @@ import Airtable from 'airtable';
 
 const API_KEY = 'patVbjyd0PZMJPOoh.e00bfcdd76f3548b8777c4312571233d8c15114c55e053791419441a9e9b7dbc';
 const BASE_ID = 'apptIOZabkjCpSYBG';
-const TABLE_NAME = 'Daily Log'; // Changed back to 'Daily Log'
+const TABLE_NAME = 'Daily Log';
 
 Airtable.configure({
   apiKey: API_KEY
@@ -52,8 +52,14 @@ const AirtableEveningRoutineChecker = () => {
 
   const handleSave = async (id, updatedFields) => {
     try {
-      // Remove the 'id' and 'ID' fields from updatedFields
-      const { id: _, ID, ...fieldsToUpdate } = updatedFields;
+      // Explicitly select only the fields we want to update
+      const fieldsToUpdate = {
+        Day: updatedFields.Day,
+        Category: updatedFields.Category,
+        'Sub Category': updatedFields['Sub Category'],
+        Details: updatedFields.Details,
+        Done: updatedFields.Done
+      };
       
       await base(TABLE_NAME).update(id, fieldsToUpdate);
       setEditingId(null);
@@ -103,7 +109,13 @@ const AirtableEveningRoutineChecker = () => {
 };
 
 const EditForm = ({ item, onSave, onCancel }) => {
-  const [fields, setFields] = useState(item);
+  const [fields, setFields] = useState({
+    Day: item.Day || '',
+    Category: item.Category || '',
+    'Sub Category': item['Sub Category'] || '',
+    Details: item.Details || '',
+    Done: item.Done || false
+  });
 
   const handleChange = (e) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
@@ -120,7 +132,7 @@ const EditForm = ({ item, onSave, onCancel }) => {
       <input
         type="text"
         name="Day"
-        value={fields.Day || ''}
+        value={fields.Day}
         onChange={handleChange}
         className="w-full p-2 border rounded"
         placeholder="Day"
@@ -128,7 +140,7 @@ const EditForm = ({ item, onSave, onCancel }) => {
       <input
         type="text"
         name="Category"
-        value={fields.Category || ''}
+        value={fields.Category}
         onChange={handleChange}
         className="w-full p-2 border rounded"
         placeholder="Category"
@@ -136,7 +148,7 @@ const EditForm = ({ item, onSave, onCancel }) => {
       <input
         type="text"
         name="Sub Category"
-        value={fields['Sub Category'] || ''}
+        value={fields['Sub Category']}
         onChange={handleChange}
         className="w-full p-2 border rounded"
         placeholder="Sub Category"
@@ -144,7 +156,7 @@ const EditForm = ({ item, onSave, onCancel }) => {
       <input
         type="text"
         name="Details"
-        value={fields.Details || ''}
+        value={fields.Details}
         onChange={handleChange}
         className="w-full p-2 border rounded"
         placeholder="Details"
@@ -153,7 +165,7 @@ const EditForm = ({ item, onSave, onCancel }) => {
         <input
           type="checkbox"
           name="Done"
-          checked={fields.Done || false}
+          checked={fields.Done}
           onChange={handleChange}
           className="mr-2"
         />
