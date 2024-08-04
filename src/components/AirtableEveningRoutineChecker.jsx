@@ -101,20 +101,18 @@ const AirtableEveningRoutineChecker = () => {
                   <EditForm item={item} onSave={handleSave} onCancel={handleCancel} />
                 ) : (
                   <div>
-                    <span>
-                      <strong>{item['Sub Category']}:</strong> {item.Details} - 
-                      <span className={item.Done ? "text-green-600 ml-1" : "text-red-600 ml-1"}>
-                        {item.Done ? "Yes" : "No"}
-                      </span>
-                      <span className="ml-1">- </span>
-                      
-                        href="#"
-                        onClick={(e) => { e.preventDefault(); handleEdit(item.id); }}
-                        className="text-blue-500 hover:text-blue-700"
-                      >
-                        Edit
-                      </a>
+                    <strong>{item['Sub Category']}:</strong> {item.Details} - 
+                    <span className={item.Done ? "text-green-600 ml-1" : "text-red-600 ml-1"}>
+                      {item.Done ? "Yes" : "No"}
                     </span>
+                    <span className="ml-1">- </span>
+                    
+                      href="#"
+                      onClick={(e) => { e.preventDefault(); handleEdit(item.id); }}
+                      className="text-blue-500 hover:text-blue-700"
+                    >
+                      Edit
+                    </a>
                   </div>
                 )}
               </li>
@@ -124,7 +122,6 @@ const AirtableEveningRoutineChecker = () => {
       ))}
     </div>
   );
-};
 
 const EditForm = ({ item, onSave, onCancel }) => {
   const [fields, setFields] = useState({
