@@ -3,7 +3,7 @@ import Airtable from 'airtable';
 
 const API_KEY = 'patVbjyd0PZMJPOoh.e00bfcdd76f3548b8777c4312571233d8c15114c55e053791419441a9e9b7dbc';
 const BASE_ID = 'apptIOZabkjCpSYBG';
-const TABLE_NAME = 'Evening Routine';
+const TABLE_NAME = 'Daily Log';
 
 Airtable.configure({
   apiKey: API_KEY,
