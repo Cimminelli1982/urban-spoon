@@ -15,20 +15,24 @@ const AirtableEveningRoutineChecker = () => {
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
   const [editingId, setEditingId] = useState(null);
-  const [today] = useState(new Date().toISOString().split('T')[0]); // Format: YYYY-MM-DD
+  const [today, setToday] = useState('');
 
   useEffect(() => {
-    fetchData();
+    const date = new Date();
+    const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+    setToday(formattedDate);
+    fetchData(formattedDate);
   }, []);
 
-  const fetchData = async () => {
+  const fetchData = async (currentDate) => {
     try {
       console.log(`Connecting to Airtable... Base ID: ${BASE_ID}, Table: ${TABLE_NAME}`);
+      console.log(`Fetching data for date: ${currentDate}`);
       
       base(TABLE_NAME).select({
         maxRecords: 100,
         view: "Grid view",
-        filterByFormula: `Day = '${today}'`
+        filterByFormula: `Day = '${currentDate}'`
       }).eachPage(function page(records, fetchNextPage) {
         const items = records.map(record => ({
           id: record.id,
@@ -62,7 +66,7 @@ const AirtableEveningRoutineChecker = () => {
       
       await base(TABLE_NAME).update(id, fieldsToUpdate);
       setEditingId(null);
-      fetchData();
+      fetchData(today);
     } catch (err) {
       console.error('Error updating record:', err);
       setError(err.message);
@@ -88,7 +92,10 @@ const AirtableEveningRoutineChecker = () => {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-2">Daily Log</h1>
-      <h2 className="text-xl font-semibold mb-6">{new Date(today).toLocaleDateString()}</h2>
+      <h2 className="text-xl font-semibold mb-6">{today}</h2>
+      {data && data.length === 0 && (
+        <p className="text-gray-500">No entries found for today. Check your Airtable for records with Day: {today}</p>
+      )}
       {Object.entries(groupedData).map(([category, items]) => (
         <div key={category} className="mb-8">
           <h3 className="text-2xl font-semibold mb-4">{category}</h3>
