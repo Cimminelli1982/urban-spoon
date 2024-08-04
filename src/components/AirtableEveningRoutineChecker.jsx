@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Airtable from 'airtable';
 
-const API_KEY = 'patVbjyd0PZMJPOoh.b53bd522d4f26b84883b86202c4d589dae3fb8f3f1f87e95a0a5d47e49d12ed2';
+const API_KEY = 'patVbjyd0PZMJPOoh.e00bfcdd76f3548b8777c4312571233d8c15114c55e053791419441a9e9b7dbc';
 const BASE_ID = 'apptIOZabkjCpSYBG';
 const TABLE_NAME = 'Daily Log';
 
@@ -94,29 +94,29 @@ const AirtableEveningRoutineChecker = () => {
       {Object.entries(groupedData).map(([category, items]) => (
         <div key={category} className="mb-8">
           <h3 className="text-2xl font-semibold mb-4">{category}</h3>
-          <ul className="space-y-2">
-          {items.map(item => (
-  <li key={item.id} className="mb-2">
-    {editingId === item.id ? (
-      <EditForm item={item} onSave={handleSave} onCancel={handleCancel} />
-    ) : (
-      <div>
-        <strong>{item['Sub Category']}:</strong> {item.Details} - 
-        <span className={item.Done ? "text-green-600 ml-1" : "text-red-600 ml-1"}>
-          {item.Done ? "Yes" : "No"}
-        </span>
-        <span className="ml-1">- </span>
-        
-          href="#"
-          onClick={(e) => { e.preventDefault(); handleEdit(item.id); }}
-          className="text-blue-500 hover:text-blue-700"
-        >
-          Edit
-        </a>
-      </div>
-    )}
-  </li>
-))}
+          <ul className="list-disc pl-5">
+            {items.map(item => (
+              <li key={item.id} className="mb-2">
+                {editingId === item.id ? (
+                  <EditForm item={item} onSave={handleSave} onCancel={handleCancel} />
+                ) : (
+                  <div className="flex items-center justify-between">
+                    <span>
+                      <strong>{item['Sub Category']}:</strong> {item.Details} - 
+                      <span className={item.Done ? "text-green-600 ml-1" : "text-red-600 ml-1"}>
+                        {item.Done ? "Yes" : "No"}
+                      </span>
+                    </span>
+                    <button 
+                      onClick={() => handleEdit(item.id)}
+                      className="ml-2 text-blue-500 hover:text-blue-700"
+                    >
+                      Edit
+                    </button>
+                  </div>
+                )}
+              </li>
+            ))}
           </ul>
         </div>
       ))}
