@@ -94,25 +94,27 @@ const AirtableEveningRoutineChecker = () => {
       {Object.entries(groupedData).map(([category, items]) => (
         <div key={category} className="mb-8">
           <h3 className="text-2xl font-semibold mb-4">{category}</h3>
-          <ul className="list-disc pl-5">
+          <ul className="space-y-2">
             {items.map(item => (
               <li key={item.id} className="mb-2">
                 {editingId === item.id ? (
                   <EditForm item={item} onSave={handleSave} onCancel={handleCancel} />
                 ) : (
-                  <div className="flex items-center justify-between">
+                  <div>
                     <span>
                       <strong>{item['Sub Category']}:</strong> {item.Details} - 
                       <span className={item.Done ? "text-green-600 ml-1" : "text-red-600 ml-1"}>
                         {item.Done ? "Yes" : "No"}
                       </span>
+                      <span className="ml-1">- </span>
+                      
+                        href="#"
+                        onClick={(e) => { e.preventDefault(); handleEdit(item.id); }}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        Edit
+                      </a>
                     </span>
-                    <button 
-                      onClick={() => handleEdit(item.id)}
-                      className="ml-2 text-blue-500 hover:text-blue-700"
-                    >
-                      Edit
-                    </button>
                   </div>
                 )}
               </li>
