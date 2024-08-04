@@ -3,10 +3,10 @@ import Airtable from 'airtable';
 
 const API_KEY = 'patVbjyd0PZMJPOoh.e00bfcdd76f3548b8777c4312571233d8c15114c55e053791419441a9e9b7dbc';
 const BASE_ID = 'apptIOZabkjCpSYBG';
-const TABLE_NAME = 'Daily Log';
+const TABLE_NAME = 'Daily Log'; // Changed back to 'Daily Log'
 
 Airtable.configure({
-  apiKey: API_KEY,
+  apiKey: API_KEY
 });
 
 const base = Airtable.base(BASE_ID);
@@ -29,7 +29,7 @@ const AirtableEveningRoutineChecker = () => {
         view: "Grid view"
       }).eachPage(function page(records, fetchNextPage) {
         const items = records.map(record => ({
-          id: record.getId(),
+          id: record.id,
           ...record.fields
         }));
         setData(items);
@@ -52,10 +52,12 @@ const AirtableEveningRoutineChecker = () => {
 
   const handleSave = async (id, updatedFields) => {
     try {
-      const { id: _, ...fieldsToUpdate } = updatedFields;
+      // Remove the 'id' and 'ID' fields from updatedFields
+      const { id: _, ID, ...fieldsToUpdate } = updatedFields;
+      
       await base(TABLE_NAME).update(id, fieldsToUpdate);
       setEditingId(null);
-      fetchData();
+      fetchData(); // Refresh data after update
     } catch (err) {
       console.error('Error updating record:', err);
       setError(err.message);
@@ -66,37 +68,35 @@ const AirtableEveningRoutineChecker = () => {
     setEditingId(null);
   };
 
-  if (error) return <div className="text-red-600 text-center p-4">Error: {error}</div>;
-  if (!data) return <div className="text-gray-600 text-center p-4">Loading...</div>;
+  if (error) return <div className="text-red-500">Error: {error}</div>;
+  if (!data) return <div className="text-gray-500">Loading...</div>;
 
   return (
-    <div className="bg-white min-h-screen py-8">
-      <div className="container mx-auto px-4">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {data.map(item => (
-            <div
-              key={item.id}
-              className={`rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden ${item.Done ? 'bg-green-200' : 'bg-red-200'}`}
-            >
-              {editingId === item.id ? (
-                <EditForm item={item} onSave={handleSave} onCancel={handleCancel} />
-              ) : (
-                <div className="p-6">
-                  <h2 className="text-xl font-semibold mb-4 text-gray-800">{item.Details}</h2>
-                  <span className={`inline-block text-xs px-2 py-1 rounded-full mb-4 ${item['Sub Category'] === 'Breakfast' ? 'bg-green-300 text-green-800' : item['Sub Category'] === 'Lunch' ? 'bg-yellow-300 text-yellow-800' : 'bg-gray-300 text-gray-800'}`}>
-                    {item['Sub Category']}
-                  </span>
-                  <button
-                    onClick={() => handleEdit(item.id)}
-                    className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105 duration-300"
-                  >
-                    Edit
-                  </button>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Daily Log Items</h1>
+      <div className="grid gap-4">
+        {data.map(item => (
+          <div key={item.id} className="bg-white shadow rounded p-4">
+            {editingId === item.id ? (
+              <EditForm item={item} onSave={handleSave} onCancel={handleCancel} />
+            ) : (
+              <div>
+                <p><strong>ID:</strong> {item.ID}</p>
+                <p><strong>Day:</strong> {item.Day}</p>
+                <p><strong>Category:</strong> {item.Category}</p>
+                <p><strong>Sub Category:</strong> {item['Sub Category']}</p>
+                <p><strong>Details:</strong> {item.Details}</p>
+                <p><strong>Done:</strong> {item.Done ? 'Yes' : 'No'}</p>
+                <button 
+                  onClick={() => handleEdit(item.id)}
+                  className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                >
+                  Edit
+                </button>
+              </div>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -116,66 +116,54 @@ const EditForm = ({ item, onSave, onCancel }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-6 space-y-4 bg-gray-50 rounded-lg shadow-lg">
-      <div>
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Day">Day</label>
-        <input
-          type="text"
-          name="Day"
-          value={fields.Day || ''}
-          onChange={handleChange}
-          className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Day"
-        />
-      </div>
-      <div>
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Category">Category</label>
-        <input
-          type="text"
-          name="Category"
-          value={fields.Category || ''}
-          onChange={handleChange}
-          className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Category"
-        />
-      </div>
-      <div>
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Sub Category">Sub Category</label>
-        <input
-          type="text"
-          name="Sub Category"
-          value={fields['Sub Category'] || ''}
-          onChange={handleChange}
-          className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Sub Category"
-        />
-      </div>
-      <div>
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Details">Details</label>
-        <input
-          type="text"
-          name="Details"
-          value={fields.Details || ''}
-          onChange={handleChange}
-          className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Details"
-        />
-      </div>
+    <form onSubmit={handleSubmit} className="space-y-2">
+      <input
+        type="text"
+        name="Day"
+        value={fields.Day || ''}
+        onChange={handleChange}
+        className="w-full p-2 border rounded"
+        placeholder="Day"
+      />
+      <input
+        type="text"
+        name="Category"
+        value={fields.Category || ''}
+        onChange={handleChange}
+        className="w-full p-2 border rounded"
+        placeholder="Category"
+      />
+      <input
+        type="text"
+        name="Sub Category"
+        value={fields['Sub Category'] || ''}
+        onChange={handleChange}
+        className="w-full p-2 border rounded"
+        placeholder="Sub Category"
+      />
+      <input
+        type="text"
+        name="Details"
+        value={fields.Details || ''}
+        onChange={handleChange}
+        className="w-full p-2 border rounded"
+        placeholder="Details"
+      />
       <div className="flex items-center">
         <input
           type="checkbox"
           name="Done"
           checked={fields.Done || false}
           onChange={handleChange}
-          className="mr-2 form-checkbox h-5 w-5 text-blue-600"
+          className="mr-2"
         />
-        <label className="text-gray-700 font-bold" htmlFor="Done">Done</label>
+        <label htmlFor="Done">Done</label>
       </div>
       <div className="flex space-x-2">
-        <button type="submit" className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-transform transform hover:scale-105 duration-300">
+        <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
           Save
         </button>
-        <button type="button" onClick={onCancel} className="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-transform transform hover:scale-105 duration-300">
+        <button type="button" onClick={onCancel} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
           Cancel
         </button>
       </div>
