@@ -91,19 +91,22 @@ const AirtableEveningRoutineChecker = () => {
       {Object.entries(groupedData).map(([category, items]) => (
         <div key={category} className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">{category}</h2>
-          <ul className="space-y-4">
+          <ul className="list-disc pl-5">
             {items.map(item => (
-              <li key={item.id} className="bg-white shadow rounded p-4">
+              <li key={item.id} className="mb-2">
                 {editingId === item.id ? (
                   <EditForm item={item} onSave={handleSave} onCancel={handleCancel} />
                 ) : (
-                  <div>
-                    <p className="text-lg font-medium">
-                      {item['Sub Category']}: {item.Details} - <span className={item.Done ? "text-green-600" : "text-red-600"}>{item.Done ? "Yes" : "No"}</span>
-                    </p>
+                  <div className="flex items-center justify-between">
+                    <span>
+                      <strong>{item['Sub Category']}:</strong> {item.Details} - 
+                      <span className={item.Done ? "text-green-600 ml-1" : "text-red-600 ml-1"}>
+                        {item.Done ? "Yes" : "No"}
+                      </span>
+                    </span>
                     <button 
                       onClick={() => handleEdit(item.id)}
-                      className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                      className="ml-2 text-blue-500 hover:text-blue-700"
                     >
                       Edit
                     </button>
@@ -139,22 +142,6 @@ const EditForm = ({ item, onSave, onCancel }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-2">
-      <input
-        type="text"
-        name="Day"
-        value={fields.Day}
-        onChange={handleChange}
-        className="w-full p-2 border rounded"
-        placeholder="Day"
-      />
-      <input
-        type="text"
-        name="Category"
-        value={fields.Category}
-        onChange={handleChange}
-        className="w-full p-2 border rounded"
-        placeholder="Category"
-      />
       <input
         type="text"
         name="Sub Category"
