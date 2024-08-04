@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Airtable from 'airtable';
 
-const API_KEY = 'patVbjyd0PZMJPOoh.e00bfcdd76f3548b8777c4312571233d8c15114c55e053791419441a9e9b7dbc';
+const API_KEY = 'patVbjyd0PZMJPOoh.b53bd522d4f26b84883b86202c4d589dae3fb8f3f1f87e95a0a5d47e49d12ed2';
 const BASE_ID = 'apptIOZabkjCpSYBG';
 const TABLE_NAME = 'Daily Log';
 
@@ -122,6 +122,7 @@ const AirtableEveningRoutineChecker = () => {
       ))}
     </div>
   );
+};
 
 const EditForm = ({ item, onSave, onCancel }) => {
   const [fields, setFields] = useState({
