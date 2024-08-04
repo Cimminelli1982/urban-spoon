@@ -6,7 +6,7 @@ const BASE_ID = 'apptIOZabkjCpSYBG';
 const TABLE_NAME = 'Daily log';
 
 Airtable.configure({
-  apiKey: API_KEY,
+  apiKey: API_KEY
 });
 
 const base = Airtable.base(BASE_ID);
@@ -66,29 +66,33 @@ const AirtableEveningRoutineChecker = () => {
     setEditingId(null);
   };
 
-  if (error) return <div className="text-red-600 text-center p-4">Error: {error}</div>;
-  if (!data) return <div className="text-gray-600 text-center p-4">Loading...</div>;
+  if (error) return <div className="text-red-500 text-center p-4">Error: {error}</div>;
+  if (!data) return <div className="text-gray-500 text-center p-4">Loading...</div>;
 
   return (
-    <div className="bg-white min-h-screen py-8">
+    <div className="bg-gray-100 min-h-screen py-8">
       <div className="container mx-auto px-4">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">Daily Log Items</h1>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {data.map(item => (
-            <div
-              key={item.id}
-              className={`rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden ${item.Done ? 'bg-green-200' : 'bg-red-200'}`}
-            >
+            <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden">
               {editingId === item.id ? (
                 <EditForm item={item} onSave={handleSave} onCancel={handleCancel} />
               ) : (
                 <div className="p-6">
-                  <h2 className="text-xl font-semibold mb-4 text-gray-800">{item.Details}</h2>
-                  <span className={`inline-block text-xs px-2 py-1 rounded-full mb-4 ${item['Sub Category'] === 'Breakfast' ? 'bg-green-300 text-green-800' : item['Sub Category'] === 'Lunch' ? 'bg-yellow-300 text-yellow-800' : 'bg-gray-300 text-gray-800'}`}>
-                    {item['Sub Category']}
-                  </span>
-                  <button
+                  <h2 className="text-xl font-semibold mb-4 text-gray-800">{item.Category}</h2>
+                  <p className="text-gray-600 mb-2"><span className="font-medium">Day:</span> {item.Day}</p>
+                  <p className="text-gray-600 mb-2"><span className="font-medium">Sub Category:</span> {item['Sub Category']}</p>
+                  <p className="text-gray-600 mb-2"><span className="font-medium">Details:</span> {item.Details}</p>
+                  <p className="text-gray-600 mb-4">
+                    <span className="font-medium">Done:</span> 
+                    <span className={`ml-2 px-2 py-1 rounded ${item.Done ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}`}>
+                      {item.Done ? 'Yes' : 'No'}
+                    </span>
+                  </p>
+                  <button 
                     onClick={() => handleEdit(item.id)}
-                    className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105 duration-300"
+                    className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
                   >
                     Edit
                   </button>
@@ -116,7 +120,7 @@ const EditForm = ({ item, onSave, onCancel }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-6 space-y-4 bg-gray-50 rounded-lg shadow-lg">
+    <form onSubmit={handleSubmit} className="p-6 space-y-4">
       <div>
         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="Day">Day</label>
         <input
@@ -172,10 +176,10 @@ const EditForm = ({ item, onSave, onCancel }) => {
         <label className="text-gray-700 font-bold" htmlFor="Done">Done</label>
       </div>
       <div className="flex space-x-2">
-        <button type="submit" className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-transform transform hover:scale-105 duration-300">
+        <button type="submit" className="flex-1 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300">
           Save
         </button>
-        <button type="button" onClick={onCancel} className="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-transform transform hover:scale-105 duration-300">
+        <button type="button" onClick={onCancel} className="flex-1 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-300">
           Cancel
         </button>
       </div>
