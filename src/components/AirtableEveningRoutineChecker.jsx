@@ -15,6 +15,7 @@ const AirtableEveningRoutineChecker = () => {
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
   const [editingId, setEditingId] = useState(null);
+  const [today] = useState(new Date().toISOString().split('T')[0]); // Format: YYYY-MM-DD
 
   useEffect(() => {
     fetchData();
@@ -26,7 +27,8 @@ const AirtableEveningRoutineChecker = () => {
       
       base(TABLE_NAME).select({
         maxRecords: 100,
-        view: "Grid view"
+        view: "Grid view",
+        filterByFormula: `Day = '${today}'`
       }).eachPage(function page(records, fetchNextPage) {
         const items = records.map(record => ({
           id: record.id,
@@ -53,8 +55,6 @@ const AirtableEveningRoutineChecker = () => {
   const handleSave = async (id, updatedFields) => {
     try {
       const fieldsToUpdate = {
-        Day: updatedFields.Day,
-        Category: updatedFields.Category,
         'Sub Category': updatedFields['Sub Category'],
         Details: updatedFields.Details,
         Done: updatedFields.Done
@@ -87,10 +87,11 @@ const AirtableEveningRoutineChecker = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Daily Log</h1>
+      <h1 className="text-3xl font-bold mb-2">Daily Log</h1>
+      <h2 className="text-xl font-semibold mb-6">{new Date(today).toLocaleDateString()}</h2>
       {Object.entries(groupedData).map(([category, items]) => (
         <div key={category} className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">{category}</h2>
+          <h3 className="text-2xl font-semibold mb-4">{category}</h3>
           <ul className="list-disc pl-5">
             {items.map(item => (
               <li key={item.id} className="mb-2">
@@ -123,8 +124,6 @@ const AirtableEveningRoutineChecker = () => {
 
 const EditForm = ({ item, onSave, onCancel }) => {
   const [fields, setFields] = useState({
-    Day: item.Day || '',
-    Category: item.Category || '',
     'Sub Category': item['Sub Category'] || '',
     Details: item.Details || '',
     Done: item.Done || false
